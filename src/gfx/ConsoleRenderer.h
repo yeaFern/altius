@@ -1,0 +1,23 @@
+#pragma once
+
+#include "../lib/olcPixelGameEngine.h"
+
+class ConsoleRenderer
+{
+public:
+	static constexpr auto FontFile = "assets/8x8_thick.png";
+private:
+	olc::PixelGameEngine* m_Engine;
+	olc::Sprite* m_FontSheet;
+	olc::Decal* m_Decal;
+
+	int m_CharacterWidth;
+	int m_CharacterHeight;
+public:
+	ConsoleRenderer(olc::PixelGameEngine* engine);
+
+	void Draw(unsigned char c, float x, float y, const olc::Pixel& fg, const olc::Pixel& bg = olc::BLACK);
+	void Draw(const std::string& s, float x, float y, const olc::Pixel& fg, const olc::Pixel& bg = olc::BLACK);
+
+	void SpookyText(const std::string& s, float x, float y, float counter, olc::Pixel color);
+};
