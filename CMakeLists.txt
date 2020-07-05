@@ -4,7 +4,7 @@ project(altius)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-file(GLOB_RECURSE SRC_LIST LIST_DIRECTORIES true
+file(GLOB_RECURSE SRC_LIST
     src/*.h
     src/*.cpp
 )
