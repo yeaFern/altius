@@ -27,6 +27,7 @@ bool Game::OnUserUpdate(float dt)
 	// Update.
 	m_EngineTimer += dt;
 	m_Input->Update(dt);
+	m_Renderer->UpdateTimer(dt);
 
 	// Tick the world if we have to.
 	if (m_DoWorldTick)
@@ -38,7 +39,7 @@ bool Game::OnUserUpdate(float dt)
 	// Render.
 	Clear(olc::BLACK);
 
-#if 0
+#if 1
 	m_Renderer->Draw("--==+", 60.5, 30, olc::Pixel(50, 50, 50));
 	m_Renderer->Draw("+==--", 78.5, 30, olc::Pixel(50, 50, 50));
 	m_Renderer->SpookyText("Dungeon Game", 66, 30.4, m_EngineTimer, olc::Pixel::FromHSV(m_EngineTimer * 90.0f, 0.5, 0.2));
@@ -51,6 +52,9 @@ bool Game::OnUserUpdate(float dt)
 
 	m_Renderer->Draw("OneLoneCoder.com - Pixel Game Engine", 0, 74, olc::Pixel(33, 33, 33));
 	m_Renderer->Draw("v0.0.1", 139, 74, olc::Pixel(33, 33, 33));
+
+	auto styled = StyledString("world", Style(olc::GREEN, olc::BLACK, StyleFX::Wavy));
+	m_Renderer->Text("Hello, " + styled + "!", 1, 1);
 
 	// Skip world stuff for now.
 	return true;

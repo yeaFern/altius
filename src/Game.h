@@ -3,6 +3,7 @@
 #include "lib/olcPixelGameEngine.h"
 
 #include "gfx/ConsoleRenderer.h"
+
 #include "input/ConsoleInputManager.h"
 
 #include "log/EventLog.h"
