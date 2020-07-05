@@ -75,9 +75,8 @@ olc::Key ConsoleInputManager::GetKey()
 void ConsoleInputManager::EmitEvent(olc::Key key)
 {
 	auto it = m_Events.find(key);
-	if (it != m_Events.end())
+	if (it != m_Events.end() && (*it).second != nullptr)
 	{
-		auto event = *it;
-		event.second();
+		(*it).second();
 	}
 }
