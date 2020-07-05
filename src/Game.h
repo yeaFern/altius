@@ -11,6 +11,8 @@
 #include "world/entity/Entity.h"
 #include "world/Map.h"
 
+#include "util/Random.h"
+
 class Game : public olc::PixelGameEngine
 {
 private:

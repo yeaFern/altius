@@ -2,6 +2,8 @@
 
 bool Game::OnUserCreate()
 {
+	Random::SetSeed(time(NULL));
+
 	this->m_Renderer = new ConsoleRenderer(this);
 	this->m_Input = new ConsoleInputManager(this);
 
@@ -16,7 +18,6 @@ bool Game::OnUserCreate()
 	});
 
 	this->m_Player = m_Map.AddEntity(25, 16, Entity::New<PlayerEntity>());
-
 	m_Map.RecalculateVisibility(25, 16, 12);
 
 	return true;
