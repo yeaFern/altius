@@ -4,6 +4,7 @@ Altius is a [roguelike](https://en.wikipedia.org/wiki/Roguelike) which is being 
 The goal of this event is to follow alongside [this tutorial](http://rogueliketutorials.com/tutorials/tcod/part-0/) over the span of many weeks and eventually have a complete game at the end.
 
 ## Building
+Altius uses [CMake](https://cmake.org/).
 ```
 $ git clone https://github.com/yeaFern/altius.git
 $ cd altius
