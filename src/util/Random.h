@@ -14,4 +14,6 @@ public:
 
     // Generates a random number in the range [min, max). 
     static uint32_t Range(uint32_t min, uint32_t max);
+
+	static float Noise(uint32_t seed);
 };

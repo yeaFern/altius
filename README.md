@@ -18,4 +18,6 @@ The fact that the Pixel Game Engine isn't primarily a roguelike engine meant tha
 
 On top of this choice of engine I joined the event late, in week three, below is a picture of the game as it stands after my first week of development, incorporating all elements from parts zero through five of the roguelike tutorial.
 
-![Weeks 1 2 and 3](/docs/week123.png?raw=true)
+![Weeks 1 2 and 3 Part 1](/docs/week123_1.png?raw=true)
+
+![Weeks 1 2 and 3 Part 2](/docs/week123_2.png?raw=true)
