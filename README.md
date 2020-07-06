@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="480" height="112" src="/docs/logo.pmg?raw=true">
+  <img width="480" height="112" src="https://raw.githubusercontent.com/yeaFern/altius/master/docs/logo.png">
 </p>
 
 Altius is a [roguelike](https://en.wikipedia.org/wiki/Roguelike) which is being developed as part of [RoguelikeDev Does The Complete Roguelike Tutorial](https://www.reddit.com/r/roguelikedev/wiki/python_tutorial_series#wiki_version_2020).
