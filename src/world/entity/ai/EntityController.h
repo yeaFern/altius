@@ -9,13 +9,13 @@ class EntityController
 public:
 	virtual ~EntityController() = default;
 
-	virtual void Tick(Map* map, Entity* entity) = 0;
+	virtual void Tick(MapPtr map, Entity* entity) = 0;
 };
 
 class WanderController : public EntityController
 {
 public:
-	void Tick(Map* map, Entity* entity) override
+	void Tick(MapPtr map, Entity* entity) override
 	{
 		srand(time(NULL));
 		if(rand() % 100 < 80)

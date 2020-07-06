@@ -17,8 +17,12 @@ bool Game::OnUserCreate()
 		m_DoWorldTick = true;
 	});
 
-	this->m_Player = m_Map.AddEntity(25, 16, Entity::New<PlayerEntity>());
-	m_Map.RecalculateVisibility(25, 16, 12);
+	auto generator = new DungeonMapGenerator;
+	this->m_Map = generator->Generate(105, 75);
+	delete generator;
+
+	this->m_Player = m_Map->AddEntity(m_Map->GetSpawnX(), m_Map->GetSpawnY(), Entity::New<PlayerEntity>());
+	m_Map->RecalculateVisibility(m_Player->GetX(), m_Player->GetY(), 12);
 
 	return true;
 }
@@ -40,7 +44,7 @@ bool Game::OnUserUpdate(float dt)
 	// Render.
 	Clear(olc::BLACK);
 
-#if 1
+#if 0
 	m_Renderer->Draw("--==+", 60.5, 30, olc::Pixel(50, 50, 50));
 	m_Renderer->Draw("+==--", 78.5, 30, olc::Pixel(50, 50, 50));
 	m_Renderer->SpookyText("Dungeon Game", 66, 30.4, m_EngineTimer, olc::Pixel::FromHSV(m_EngineTimer * 90.0f, 0.5, 0.2));
@@ -62,18 +66,18 @@ bool Game::OnUserUpdate(float dt)
 #endif
 
 	// Draw the map.
-	for (int x = 0; x < m_Map.GetWidth(); x++)
+	for (int x = 0; x < m_Map->GetWidth(); x++)
 	{
-		for (int y = 0; y < m_Map.GetHeight(); y++)
+		for (int y = 0; y < m_Map->GetHeight(); y++)
 		{
-			TileData& data = Tiles::GetData(m_Map.GetTile(x, y));
+			TileData& data = Tiles::GetData(m_Map->GetTile(x, y));
 
-			if (m_Map.IsVisible(x, y))
+			if (m_Map->IsVisible(x, y))
 			{
 				// If the tile is visible, draw it normally.
 				m_Renderer->Draw(data.Character, x, y, data.Color);
 			}
-			else if (m_Map.IsSeen(x, y))
+			else if (m_Map->IsSeen(x, y))
 			{
 				// If the tile is not visible, but has been seen, draw it darker.
 				m_Renderer->Draw(data.Character, x, y, olc::Pixel(20, 33, 33));
@@ -81,7 +85,7 @@ bool Game::OnUserUpdate(float dt)
 			else
 			{
 				// If the tile is unknown, draw some void stuff there.
-				int hash = x + y * m_Map.GetWidth();
+				int hash = x + y * m_Map->GetWidth();
 				srand(hash);
 				if (rand() % 1000 < 2)
 				{
@@ -100,10 +104,10 @@ bool Game::OnUserUpdate(float dt)
 	}
 
 	// Draw each entity.
-	for (const auto& entity : m_Map.GetEntities())
+	for (const auto& entity : m_Map->GetEntities())
 	{
 		// But only if it is visible.
-		if (m_Map.IsVisible(entity->GetX(), entity->GetY()))
+		if (m_Map->IsVisible(entity->GetX(), entity->GetY()))
 		{
 			entity->Draw(m_Renderer);
 		}
@@ -123,9 +127,9 @@ bool Game::OnUserUpdate(float dt)
 		m_Renderer->Draw("____________", 145 - W + 2, 1.2, olc::DARK_GREY);
 		m_Renderer->Draw("surroundings", 145 - W + 2, 1, olc::WHITE, olc::Pixel(0, 0, 0, 0));
 		int y = 3;
-		for (const auto& entity : m_Map.GetEntities())
+		for (const auto& entity : m_Map->GetEntities())
 		{
-			if (entity != m_Player && m_Map.IsVisible(entity->GetX(), entity->GetY()))
+			if (entity != m_Player && m_Map->IsVisible(entity->GetX(), entity->GetY()))
 			{
 				m_Renderer->Draw(entity->GetCharacter(), 145 - W + 2, y, entity->GetColor());
 				m_Renderer->Draw(':', 145 - W + 3, y, olc::Pixel(33, 33, 33));
@@ -159,19 +163,19 @@ bool Game::OnUserUpdate(float dt)
 
 void Game::TickWorld()
 {
-	for (const auto& ent : m_Map.GetEntities())
+	for (const auto& ent : m_Map->GetEntities())
 	{
-		ent->Tick(&m_Map);
+		ent->Tick(m_Map);
 	}
 }
 
 void Game::MovePlayer(int dx, int dy)
 {
 	// Move the player entity.
-	m_Map.MoveEntity(dx, dy, m_Player);
+	m_Map->MoveEntity(dx, dy, m_Player);
 
 	// Recalculate the maps visibility based on the new location.
-	m_Map.RecalculateVisibility(m_Player->GetX(), m_Player->GetY(), 12);
+	m_Map->RecalculateVisibility(m_Player->GetX(), m_Player->GetY(), 12);
 
 	// Since the player moved, tick the world.
 	m_DoWorldTick = true;

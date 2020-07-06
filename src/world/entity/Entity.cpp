@@ -1,12 +1,13 @@
 #include "Entity.h"
 #include "ai/EntityController.h"
+#include "../Map.h"
 
 Entity::Entity(EntityType type, const std::string& name, EntityController* controller)
 	: Type(type), Name(name), m_Controller(controller)
 {
 }
 
-void Entity::Tick(Map* map)
+void Entity::Tick(std::shared_ptr<Map> map)
 {
 	if (m_Controller != nullptr)
 	{

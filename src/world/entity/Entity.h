@@ -27,7 +27,7 @@ protected:
 public:
 	Entity(EntityType type, const std::string& name, EntityController* controller);
 
-	void Tick(Map* map);
+	void Tick(std::shared_ptr<Map> map);
 
 	void Move(int dx, int dy);
 

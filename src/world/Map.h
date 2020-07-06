@@ -26,18 +26,28 @@ enum class MovementResult
 
 class Map
 {
+	friend class DungeonMapGenerator;
+	friend class CaveMapGenerator;
 private:
 	TileInstance* m_Tiles;
 	std::vector<EntityPtr> m_Entities;
 
-	int m_Width;
-	int m_Height;
+	size_t m_Width;
+	size_t m_Height;
+
+	size_t m_SpawnX;
+	size_t m_SpawnY;
 public:
-	Map(int width, int height);
+	Map(size_t width, size_t height, Tile defaultTile);
 	~Map();
 	
-	int GetWidth() const;
-	int GetHeight() const;
+	size_t GetWidth() const;
+	size_t GetHeight() const;
+
+	size_t GetSpawnX() const;
+	size_t GetSpawnY() const;
+
+	void SetSpawn(size_t x, size_t y);
 
 	TileInstance& GetTileInstance(int x, int y);
 	Tile GetTile(int x, int y) const;
@@ -64,9 +74,7 @@ public:
 
 	void MoveEntity(int dx, int dy, EntityPtr ent);
 	MovementResult TryMoveEntity(int x, int y);
-private:
-	void CreateRoom(const Rectangle& room);
-	void CreateHTunnel(int x1, int x2, int y);
-	void CreateVTunnel(int y1, int y2, int x);
+public:
+	static std::shared_ptr<Map> New(size_t width, size_t height, Tile defaultTile);
 };
-
+using MapPtr = std::shared_ptr<Map>;

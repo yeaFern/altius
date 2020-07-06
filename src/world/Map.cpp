@@ -1,174 +1,12 @@
 #include "Map.h"
 
-static constexpr auto InitialChance = 0.38f;
-static constexpr auto DeathLimit = 3;
-static constexpr auto BirthLimit = 4;
-static constexpr auto Iterations = 4;
-
-Map::Map(int width, int height)
+Map::Map(size_t width, size_t height, Tile defaultTile)
 	: m_Tiles(new TileInstance[width * height]), m_Width(width), m_Height(height)
 {
-	auto RandomFloat = []()
-	{
-		return static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
-	};
-
-#if 0
 	for (int i = 0; i < width * height; i++)
 	{
-		m_Tiles[i].Type = RandomFloat() < InitialChance ? Tile::Wall : Tile::Floor;
+		m_Tiles[i].Type = defaultTile;
 	}
-
-	for (int i = 0; i < 8; i++)
-	{
-		auto CountNeighbours = [&](int x, int y) -> int {
-			int result = 0;
-			for (int yo = -1; yo <= 1; yo++)
-			{
-				for (int xo = -1; xo <= 1; xo++)
-				{
-					if (yo == 0 && xo == 0)
-					{
-						continue;
-					}
-
-					int nx = x + xo;
-					int ny = y + yo;
-
-					if (nx < 0 || nx >= m_Width || ny < 0 || ny >= m_Height)
-					{
-						result++;
-					}
-					else if (m_Tiles[nx + ny * m_Width].Type == Tile::Wall)
-					{
-						result++;
-					}
-				}
-			}
-			return result;
-		};
-
-		TileInstance* newTiles = new TileInstance[m_Width * m_Height];
-		for (int y = 0; y < m_Height; y++)
-		{
-			for (int x = 0; x < m_Width; x++)
-			{
-				int neighbours = CountNeighbours(x, y);
-				int idx = x + y * m_Width;
-
-				if (m_Tiles[idx].Type == Tile::Wall)
-				{
-					newTiles[idx].Type = neighbours >= DeathLimit ? Tile::Wall : Tile::Floor;
-				}
-				else
-				{
-					newTiles[idx].Type = neighbours > BirthLimit ? Tile::Wall : Tile::Floor;
-				}
-			}
-		}
-		delete[] m_Tiles;
-		m_Tiles = newTiles;
-	}
-
-	for (int i = 0; i < m_Width; i++)
-	{
-		m_Tiles[i + 0 * m_Width].Type = Tile::Wall;
-		m_Tiles[i + (m_Height - 1) * m_Width].Type = Tile::Wall;
-	}
-
-	for (int i = 0; i < m_Height; i++)
-	{
-		m_Tiles[0 + i * m_Width].Type = Tile::Wall;
-		m_Tiles[(m_Width - 1) + i * m_Width].Type = Tile::Wall;
-	}
-
-#else
-	for (int i = 0; i < width * height; i++)
-	{
-		m_Tiles[i].Type = Tile::Wall;
-	}
-
-	auto room1 = Rectangle(20, 15, 10, 15);
-	auto room2 = Rectangle(35, 15, 10, 15);
-
-	std::vector<Rectangle> rooms;
-	int room_num = 0;
-
-	const int RoomCount = 30;
-	const int MinRoomSize = 6;
-	const int MaxRoomSize = 10;
-
-	auto randint = [](int min, int max) {
-		return min + (std::rand() % (max - min + 1));
-	};
-
-	for (int i = 0; i < RoomCount; i++)
-	{
-		int w = randint(MinRoomSize, MaxRoomSize);
-		int h = randint(MinRoomSize, MaxRoomSize);
-		int x = randint(0, m_Width - w - 1);
-		int y = randint(0, m_Height - h - 1);
-
-		Rectangle newRoom(x, y, w, h);
-		bool overlap = false;
-		for (const auto& other : rooms)
-		{
-			if (newRoom.Intersects(other))
-			{
-				overlap = true;
-				break;
-			}
-		}
-
-		if (!overlap)
-		{
-			CreateRoom(newRoom);
-
-			if (room_num > 0)
-			{
-				int px;
-				int py;
-				rooms[room_num - 1].GetCenter(px, py);
-
-				int nx;
-				int ny;
-				newRoom.GetCenter(nx, ny);
-
-				if (randint(0, 1) == 1)
-				{
-					CreateHTunnel(px, nx, py);
-					CreateVTunnel(py, ny, nx);
-				}
-				else
-				{
-					CreateVTunnel(py, ny, px);
-					CreateHTunnel(px, nx, ny);
-				}
-			}
-
-			rooms.push_back(newRoom);
-			room_num++;
-		}
-	}
-
-	const int MaxMonsters = 3;
-	for (const auto& room : rooms)
-	{
-		int x = randint(room.X1 + 1, room.X2 - 1);
-		int y = randint(room.Y1 + 1, room.Y2 - 1);
-
-		if (randint(0, 100) < 80)
-		{
-			AddEntity(x, y, Entity::New<GoblinEntity>());
-		}
-	}
-
-	for (int i = 0; i < width * height; i++)
-	{
-		//m_Tiles[i].Type = Tile::Floor;
-		//m_Tiles[i].Visible = true;
-	}
-#endif
 }
 
 Map::~Map()
@@ -176,14 +14,30 @@ Map::~Map()
 	delete[] m_Tiles;
 }
 
-int Map::GetWidth() const
+size_t Map::GetWidth() const
 {
 	return m_Width;
 }
 
-int Map::GetHeight() const
+size_t Map::GetHeight() const
 {
 	return m_Height;
+}
+
+size_t Map::GetSpawnX() const
+{
+	return m_SpawnX;
+}
+
+size_t Map::GetSpawnY() const
+{
+	return m_SpawnY;
+}
+
+void Map::SetSpawn(size_t x, size_t y)
+{
+	this->m_SpawnX = x;
+	this->m_SpawnY = y;
 }
 
 TileInstance& Map::GetTileInstance(int x, int y)
@@ -416,32 +270,23 @@ void Map::MoveEntity(int dx, int dy, EntityPtr ent)
 	int ny = ent->GetY() + dy;
 
 	auto result = TryMoveEntity(nx, ny);
-	if (result == MovementResult::Free)
+	switch (result)
 	{
+	case MovementResult::Free: {
 		ent->Move(dx, dy);
-	}
-	else if (result == MovementResult::BlockedByTile)
-	{
+	} break;
+	case MovementResult::BlockedByTile: {
 		// Entity bumped into tile.
 		SetTile(nx, ny, Tile::Floor);
-	}
-	else if (result == MovementResult::BlockedByEntity)
-	{
+	} break;
+	case MovementResult::BlockedByEntity: {
 		// Entity bumped into another entity.
 		EntityPtr other = GetEntityAt(nx, ny);
 		ent->CollidedWithEntity(other);
-
-		//entity->Health -= 5;
-		//if (entity->Health <= 0)
-		//{
-		//	entity->Color = olc::DARK_RED;
-		//}
-		//Log("Bonk the goblin");
-
-	}
-	else
-	{
+	} break;
+	default: {
 		// Unhandled case, perhaps throw a warning.
+	} break;
 	}
 }
 
@@ -465,33 +310,7 @@ MovementResult Map::TryMoveEntity(int x, int y)
 	return MovementResult::Free;
 }
 
-void Map::CreateRoom(const Rectangle& room)
+std::shared_ptr<Map> Map::New(size_t width, size_t height, Tile defaultTile)
 {
-	for (int x = room.X1 + 1; x < room.X2; x++)
-	{
-		for (int y = room.Y1 + 1; y < room.Y2; y++)
-		{
-			m_Tiles[x + y * m_Width].Type = Tile::Floor;
-		}
-	}
-}
-
-void Map::CreateHTunnel(int x1, int x2, int y)
-{
-	if (x2 < x1) std::swap(x1, x2);
-
-	for (int x = x1; x < x2 + 1; x++)
-	{
-		m_Tiles[x + y * m_Width].Type = Tile::Floor;
-	}
-}
-
-void Map::CreateVTunnel(int y1, int y2, int x)
-{
-	if (y2 < y1) std::swap(y1, y2);
-
-	for (int y = y1; y < y2 + 1; y++)
-	{
-		m_Tiles[x + y * m_Width].Type = Tile::Floor;
-	}
+	return std::make_shared<Map>(width, height, defaultTile);
 }

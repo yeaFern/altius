@@ -9,7 +9,8 @@
 #include "log/EventLog.h"
 
 #include "world/entity/Entity.h"
-#include "world/Map.h"
+#include "world/gen/CaveMapGenerator.h"
+#include "world/gen/DungeonMapGenerator.h"
 
 #include "util/Random.h"
 
@@ -22,7 +23,7 @@ private:
 	float m_EngineTimer = 0.0f;
 
 	bool m_DoWorldTick = false;
-	Map m_Map = Map(105, 75);
+	MapPtr m_Map;
 	EntityPtr m_Player;
 public:
 	Game()
