@@ -1,40 +1,46 @@
 #pragma once
 
+#include <stack>
+
 #include "lib/olcPixelGameEngine.h"
-
 #include "gfx/ConsoleRenderer.h"
-
 #include "input/ConsoleInputManager.h"
-
-#include "log/EventLog.h"
-
-#include "world/entity/Entity.h"
-#include "world/gen/CaveMapGenerator.h"
-#include "world/gen/DungeonMapGenerator.h"
 
 #include "util/Random.h"
 
+class Scene;
 class Game : public olc::PixelGameEngine
 {
 private:
 	ConsoleRenderer* m_Renderer;
 	ConsoleInputManager* m_Input;
 
-	float m_EngineTimer = 0.0f;
+	std::stack<std::shared_ptr<Scene>> m_Scenes;
 
-	bool m_DoWorldTick = false;
-	MapPtr m_Map;
-	EntityPtr m_Player;
+	bool m_ShouldExit = false;
 public:
 	Game()
 	{
-		sAppName = "Dungeon Game";
+		sAppName = "Altius";
 	}
 
 	bool OnUserCreate() override;
 	bool OnUserUpdate(float dt) override;
 
-	void TickWorld();
+	template<typename T>
+	void PushScene();
+	void PopScene();
 
-	void MovePlayer(int dx, int dy);
+	void Exit();
 };
+
+template<typename T>
+inline void Game::PushScene()
+{
+	auto scene = std::make_shared<T>();
+	scene->m_Game = this;
+	scene->m_Renderer = m_Renderer;
+	scene->m_Input = m_Input;
+	scene->OnCreate();
+	m_Scenes.push(scene);
+}
