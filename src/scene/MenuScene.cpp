@@ -1,5 +1,6 @@
 #include "MenuScene.h"
 #include "GameScene.h"
+#include "CreditsScene.h"
 
 void MenuScene::OnCreate()
 {
@@ -126,6 +127,11 @@ void MenuScene::OnUpdate(float dt)
 		if (Selection == 0)
 		{
 			m_Game->PushScene<GameScene>();
+		}
+
+		if (Selection == 2)
+		{
+			m_Game->PushScene<CreditsScene>();
 		}
 
 		if (Selection == 3)
