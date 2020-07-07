@@ -3,11 +3,13 @@
 #include <string>
 #include <vector>
 
+#include "../gfx/StyledString.h"
+
 struct LogEntry
 {
-	std::string Message;
+	StyledString Message;
 
-	LogEntry(const std::string& message)
+	LogEntry(const StyledString& message)
 		: Message(message)
 	{
 	}
@@ -22,7 +24,7 @@ public:
 		return instance;
 	}
 
-	static void Log(const std::string& message)
+	static void Log(const StyledString& message)
 	{
 		Instance().AddEntry(message);
 	}
@@ -34,7 +36,7 @@ public:
 private:
 	std::vector<LogEntry> m_Entries;
 public:
-	void AddEntry(const std::string& message);
+	void AddEntry(const StyledString& message);
 
 	std::vector<LogEntry>& GetEntries();
 };

@@ -129,7 +129,7 @@ void GameScene::OnUpdate(float dt)
 		int y = 25;
 		for (auto it = EventLog::Instance().GetEntries().rbegin(); it != EventLog::Instance().GetEntries().rend(); it++)
 		{
-			m_Renderer->Draw((*it).Message, 145 - W + 2, y, olc::WHITE);
+			m_Renderer->Text((*it).Message, 145 - W + 2, y);
 			y++;
 		}
 	}

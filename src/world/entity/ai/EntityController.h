@@ -29,7 +29,7 @@ public:
 
 				if (map->IsVisible(entity->GetX(), entity->GetY()))
 				{
-					EventLog::Log(entity->Name + " wanders about");
+					EventLog::Log(StyledString(entity->Name, Style(entity->GetColor())) + " wanders about");
 				}
 			}
 		}

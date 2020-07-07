@@ -1,6 +1,6 @@
 #include "EventLog.h"
 
-void EventLog::AddEntry(const std::string& message)
+void EventLog::AddEntry(const StyledString& message)
 {
 	m_Entries.emplace_back(message);
 }
